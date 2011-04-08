@@ -3,6 +3,13 @@ var json = require('./json2');
 var superkoud = require('./superkoud');
 var http = require('http');
 var express = require('express');
+var c = new(cradle.Connection)('g', 5984, 
+{
+    cache: true,
+    raw: false
+});
+var db = c.database('superkoud');
+
 var server = express.createServer();
 server.use(express.bodyParser());
 
@@ -27,8 +34,14 @@ server.get('/',
 server.get('/user/', 
     function(req, res)
     {
+        var result = [];
+        db.view('superkoud/usernames', function (err, docs) 
+        {
+            console.log(docs);
+            getusername = function(doc) {  return doc;}
+            res.send(docs.map(getusername));
+        });
         console.log('get all users');
-        res.send(users.map(superkoud.getUser));
     }
 );
 
@@ -55,14 +68,9 @@ server.post('/user/', //checkSession,
 server.get('/user/:id', 
     function(req, res)
     {
-        var c = new(cradle.Connection)('g', 5984, {
-    cache: true,
-    raw: false
-});
-        console.log(c);
-        var db = c.database('superkoud');
-
-        db.get('achiel', function (err, doc) {
+        console.log("getting " + req.params.id);
+        db.get(req.params.id, function (err, doc) 
+        {
             console.log(doc);
             res.send(doc);
         });
