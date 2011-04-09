@@ -1,40 +1,100 @@
+var cradle = require('cradle');
+var json = require('./json2');
 var superkoud = function() {};
 
-function user(username, tips)
+var c = new(cradle.Connection)('g', 5984, 
 {
-    this.username = username;
-    this.tips = tips;
-}
+    cache: true,
+    raw: false
+});
+var db = c.database('superkoud');
 
-function tip(title, description)
+exports.getAllUsers = function(req, res)
 {
-    this.title = title;
-    this.description = description;
-}
-
-function createUser(username)
-{
-    if (username == 'achiel')
-      throw new Error('User already exists');
-    else
-        console.log("should have created user" + username);
-}
-
-function getUser(username)
-{
-    if (username == 'achiel')
+    var result = [];
+    db.view('superkoud/usernames', function (err, docs) 
     {
-        tips = [new tip('the matrix', 'sci-fi muke'), ];
-        return new user('achiel', tips);
-    }
-    if (username == 'muriel')
+        getusername = function(doc) {  return doc;}
+        res.send(docs.map(getusername));
+    });
+}
+exports.getUser = function(req, res)
+{
+    db.get(req.params.id, function (err, doc) 
     {
-        tips = [new tip('la vita e bella', 'mush stuff'), ];
-        return new user('muriel', tips);
-    }
-    else
-        return null;
+        res.send(doc);
+    });
+}
+exports.getAttribute = function(req, res)
+{
+    user = superkoud.getUser(req.params.id);
+    res.send(user[req.params.key]);
 }
 
-exports.getUser = getUser;
-exports.createUser = createUser;
+exports.editAttribute = function(req, res)
+{
+    db.get(req.params.id, function (err, doc) 
+    {
+        raw_data = req.body['data'];
+        for (title in req.body) 
+        {
+            if (!doc[req.params.key][title])
+            {
+                res.statusCode = 410;
+                res.send("Can't update that " + req.params.key + ", it doesn't exist!");
+                return;
+            }
+            doc[req.params.key][title] = JSON.parse(req.body[title]);
+        }
+
+        db.save(req.params.id, doc, errorHandler);
+        res.send(doc);
+    });
+}
+
+exports.createAttribute = function(req, res)
+{
+    db.get(req.params.id, function (err, doc) 
+    {
+        raw_data = req.body['data'];
+        for (title in req.body) 
+        {
+            if (doc[req.params.key][title])
+            {
+                res.statusCode = 409;
+                res.send("Can't create that " + req.params.key + ", it already exists!");
+                return;
+            }
+            doc[req.params.key][title] = JSON.parse(req.body[title]);
+        }
+
+        db.save(req.params.id, doc, errorHandler);
+        res.send(doc);
+    });
+}
+
+exports.deleteAttribute = function(req, res)
+{
+    db.get(req.params.id, function (err, doc) 
+    {
+        if (!doc[req.params.type] || !doc[req.params.type][req.params.key])
+        {
+            res.statusCode = 410;
+            res.send("Can't delete that, it's not here");
+            return;
+        }
+        delete doc[req.params.type][req.params.key];
+        db.save(req.params.id, doc, errorHandler);
+        res.send('ok!');
+    });
+}
+
+function replaceAll(param) { return escape(param.replace(/ /g, "+"));}
+
+function errorHandler(err, res)
+{
+    if (err)
+        console.log("oops" + err);
+    else
+        console.log("result: " + res);
+}
