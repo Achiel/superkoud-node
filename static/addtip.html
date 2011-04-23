@@ -1,0 +1,25 @@
+<form class="add_tip" action="/user/{{username}}/tips/" method="POST" id="addtipform">
+	<div><label>Title</label> <input class="title" size="22" type="text" name="title"/></div>
+	<div><label>Description</label> <textarea cols="25" type="text" name="description"/></div>
+	<br/><div><input type="submit" value="save!"/></div>
+</form>
+<div id="validation">
+validation message goes here
+</div>
+    <script type="text/javascript">
+
+        $('#addtipform').submit(function() {
+            var formdata = JSON.stringify($(this).serializeObject());
+            $.post(this.action, formdata, function(data)
+            {
+                console.log( data);
+            })
+            .success(function(data) { alert(data);})
+            .error(function(data) { 
+                var message = data.responseText;
+                $("#validation").html(message);
+            });
+                    
+            return false;
+        });
+    </script>

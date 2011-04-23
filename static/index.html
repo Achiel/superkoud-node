@@ -2,15 +2,54 @@
     <head>
         <title>Superkoud</title>
         <script type='text/javascript' src='/jquery.js'></script>
-        <script type='text/html'>
-           <div id="Test">
-
-                id: {{_id}} <br/>
-
-        </div> 
+        <script type='text/javascript' src='/json2.js'></script>
+        <script type='text/javascript' src='/mustache.js'></script>
+        <script type='text/javascript'>
+            $.getJSON("http://localhost:3000/user/achiel", function(data) {
+                $.get("http://localhost:3000/tips.html", function(templateData) {
+                    tips = data.tips; 
+                    var html = Mustache.to_html(templateData, tips);
+                    $("#temp").html(html);
+                });
+            });
         </script>
+        <script type='text/javascript'>
+           function addTip() {
+                var variables = {"username" : "achiel"};
+                $.get("http://localhost:3000/addtip.html", function(tipform) {
+                        var html = Mustache.to_html(tipform, variables);
+                        $("#form").html(html);
+                    }); 
+            } 
+            $.fn.serializeObject = function()
+            {
+                var o = {};
+                var a = this.serializeArray();
+                $.each(a, function() {
+                    if (o[this.name] !== undefined) {
+                        if (!o[this.name].push) {
+                            o[this.name] = [o[this.name]];
+                        }
+                        o[this.name].push(this.value || '');
+                    } else {
+                        o[this.name] = this.value || '';
+                    }
+                });
+                return o;
+            };
+        </script>
+
     </head>
     <body>
+        <div id="menu">
+            <a href="#" onClick="addTip();">add tip</a>
+        </div>
         hello party people!
+        <div id='temp'>
+            ble
+        </div>
+        <div id="form">
+            form goes here
+        </div>
     </body>
 </html>

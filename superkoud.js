@@ -1,8 +1,11 @@
 var cradle = require('cradle');
 var json = require('./json2');
+console.log(JSON);
+for (a in JSON)
+    console.log(a);
 var superkoud = function() {};
 
-var c = new(cradle.Connection)('g', 5984, 
+var c = new(cradle.Connection)('localhost', 5984, 
 {
     cache: true,
     raw: false
@@ -27,7 +30,7 @@ exports.getUser = function(req, res)
 }
 exports.getAttribute = function(req, res)
 {
-    user = superkoud.getUser(req.params.id);
+    user = exports.getUser(req.params.id);
     res.send(user[req.params.key]);
 }
 
@@ -57,16 +60,13 @@ exports.createAttribute = function(req, res)
     db.get(req.params.id, function (err, doc) 
     {
         raw_data = req.body['data'];
-        for (title in req.body) 
+        if (doc[req.params.key][req.body.title])
         {
-            if (doc[req.params.key][title])
-            {
-                res.statusCode = 409;
-                res.send("Can't create that " + req.params.key + ", it already exists!");
-                return;
-            }
-            doc[req.params.key][title] = JSON.parse(req.body[title]);
+            res.statusCode = 409;
+            res.send("Can't create that " + req.params.key + ", it already exists!");
+            return;
         }
+        doc[req.params.key][req.body.title] = req.body;
 
         db.save(req.params.id, doc, errorHandler);
         res.send(doc);
