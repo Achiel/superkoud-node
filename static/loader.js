@@ -1,6 +1,7 @@
 require([ "sequencer", "client"], function(sequencer, client) {
 
     require.ready(function() {
+        parent.sequencer = sequencer;
         parent.superkoud = client;
         console.log("starting load sequence..");
 

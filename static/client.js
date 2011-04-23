@@ -10,19 +10,36 @@ define(function(require, exports, module) {
                 }); 
         } 
         exports.viewUsers = function() {
-            $.get("/user/", function(data) {
-                console.log(data);
-                $.get("/tips.html", function(tipform) {
-                    for (user in data) {
-                        console.log("going after " + data[user]);
-                        $.get("/user/" + data[user], function(user) {
-                            var html = Mustache.to_html(tipform, user);
-                            $("#tips").append(html);
-                            console.log(user);
-                        });
-                    }
+            console.log(sequencer);
+            var getTipForm = function(callback) {
+                  $.get("/tips.html", function(tipform) {
+                  // crappy temp solution until we discover how to do this neatly:
+                  parent.tipform = tipform;
+                  callback();
+              });
+            };
+            var getUsers = function(callback) {
+                  $.get("/user/", function(data) {
+                      // crappy temp solution until we discover how to do this neatly:
+                      parent.users = data;
+                      callback();
+                  });
+            };
+            var getUser =  function(username) {
+                $.get("/user/" + username, function(user) {
+                    console.log(user);
+                    var html = Mustache.to_html(tipform, user);
+                    $("#tips").append(html);
                 });
-            });
+            };
+            var displayUsers = function() {
+                console.log("gonig to display users");
+                for (user in users) {
+                    getUser(users[user]);
+                }
+            };
+            var actions = [getUsers,getTipForm];
+            sequencer.collect(actions, displayUsers);
         }
         console.log("superkoud-js loaded..");
     }

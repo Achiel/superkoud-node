@@ -1,0 +1,17 @@
+<div class="items" id='{{_id}}box'>
+	<div class="nav">
+		<a href="#" class="back">&lt;</a>
+		<a href="#" class="next">&gt;</a>
+	</div>
+
+	<span class="username">{{_id}}</span><a href="#" onClick="$('#{{_id}}box').remove();"> X</a>
+    {{#tips}}
+	<ul>
+		<li class="tip">
+			<span class="tip_title">{{title}}</span>
+			<img class="tip_image" src="{{image}}" width="80px"/>
+			<span class="tip_description">{{description}}</span>
+		</li>
+	</ul>
+    {{/tips}}
+</div>
