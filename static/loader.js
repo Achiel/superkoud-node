@@ -4,15 +4,15 @@ require([ "sequencer", "client"], function(sequencer, client) {
         parent.superkoud = client;
         console.log("starting load sequence..");
 
-        $.getJSON("http://ismoke:3000/user/achiel", function(data) {
-            $.get("http://ismoke:3000/tips.html", function(templateData) {
+        $.getJSON("/user/achiel", function(data) {
+            $.get("/tips.html", function(templateData) {
                 tips = data.tips; 
                 var html = Mustache.to_html(templateData, tips);
                 $("#temp").html(html);
             });
         });
 
-        $.get("http://ismoke:3000/menu.html", function(data) {
+        $.get("/menu.html", function(data) {
             $("#menu").html(data);
         });
     });
