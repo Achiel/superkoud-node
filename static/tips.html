@@ -1,17 +1,14 @@
 <div class="items" id='{{_id}}box'>
-	<div class="nav">
-		<a href="#" class="back">&lt;</a>
-		<a href="#" class="next">&gt;</a>
-	</div>
-
-	<span class="username">{{_id}}</span><a href="#" onClick="$('#{{_id}}box').remove();"> X</a>
-    {{#tips}}
-	<ul>
-		<li class="tip">
-			<span class="tip_title">{{title}}</span>
-			<img class="tip_image" src="{{image}}" width="80px"/>
-			<span class="tip_description">{{description}}</span>
-		</li>
-	</ul>
-    {{/tips}}
+    <div class="items_content">
+        <span class="username">{{_id}}</span><a href="#" onClick="$('#{{_id}}box').remove();"> <img src='x_small.png' class='close'/></a>
+        {{#tips}}
+        <ul>
+            <li class="tip">
+                <span class="tip_title">{{title}}</span>
+                <img class="tip_image" src="http://blog.80millionmoviesfree.com/wp-content/uploads/2009/06/transformers2.jpg" width="80px"/>
+                <span class="tip_description">{{description}}</span>
+            </li>
+        </ul>
+        {{/tips}}
+    </div>
 </div>
